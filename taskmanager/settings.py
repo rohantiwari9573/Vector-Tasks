@@ -11,11 +11,7 @@ SECRET_KEY = 'django-insecure-secret-key'
 
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "task-manager-j13m.onrender.com",
-]
+ALLOWED_HOSTS = ["*"]
 
 # =========================
 # INSTALLED APPS
