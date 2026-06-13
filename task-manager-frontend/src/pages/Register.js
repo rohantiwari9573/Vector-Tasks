@@ -1,66 +1,114 @@
 import { useState } from "react";
-import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import api from "../services/api";
 
-export default function Register() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+function Register() {
+  const navigate = useNavigate();
 
-  const registerUser = async (e) => {
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post(
-        "https://task-manager-j13m.onrender.com/api/register/",
-        {
-          username: username,
-          password: password,
-        }
-      );
+    setError("");
+    setLoading(true);
 
-      alert("Registration Successful!");
-      console.log(response.data);
+    try {
+      await api.post("register/", formData);
+
+      alert("Registration successful! Please login.");
+
+      navigate("/");
 
     } catch (err) {
-      console.log(err);
+      console.error(err);
 
-      if (err.response) {
-        console.log(err.response.data);
-        alert(JSON.stringify(err.response.data));
+      if (err.response?.data?.username) {
+        setError(err.response.data.username[0]);
       } else {
-        alert("Server Error");
+        setError("Registration failed");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>Register</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-black via-slate-950 to-blue-950 px-4">
+      <div className="bg-slate-800/70 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700">
 
-      <form onSubmit={registerUser}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
+        <h1 className="text-4xl font-bold text-white text-center mb-8">
+          Create Account
+        </h1>
 
-        <br />
-        <br />
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 text-red-300 p-3 rounded-lg mb-4 text-sm">
+            {error}
+          </div>
+        )}
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <form onSubmit={handleRegister} className="space-y-5">
 
-        <br />
-        <br />
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+            className="w-full p-4 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-        <button type="submit">Register</button>
-      </form>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="w-full p-4 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 transition duration-200 text-white py-3 rounded-lg font-semibold flex items-center justify-center"
+          >
+            {loading ? (
+              <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              "Register"
+            )}
+          </button>
+
+        </form>
+
+        <p className="text-slate-300 text-center mt-6">
+          Already have an account?{" "}
+          <Link
+            to="/"
+            className="text-blue-400 hover:text-blue-300"
+          >
+            Login
+          </Link>
+        </p>
+
+      </div>
     </div>
   );
 }
+
+export default Register;
