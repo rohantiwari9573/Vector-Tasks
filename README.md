@@ -1,106 +1,162 @@
-# 📝 Task Manager REST API
+# 🚀 Velocity Tasks — Production-Ready Task Management API
 
-A production-ready Task Management backend built using **Django REST Framework** with **JWT authentication**, enabling secure and user-specific task operations.
+A scalable and production-grade **Task Management REST API** built with **Django REST Framework**, featuring secure JWT authentication, PostgreSQL persistence, CI/CD automation, and cloud deployment.
 
----
-
-## 🚀 Live API
-
-🔗 https://task-manager-j13m.onrender.com/swagger/
+Designed with modern backend engineering practices including protected endpoints, rate limiting, environment-based configuration, Swagger API documentation, and production deployment pipelines.
 
 ---
 
-## ⚙️ Tech Stack
+# 🌐 Live Demo
 
-* **Backend:** Django, Django REST Framework
-* **Authentication:** JWT (SimpleJWT)
-* **Database:** PostgreSQL
-* **Deployment:** Render + Gunicorn
-* **API Documentation:** Swagger (drf-yasg)
+### 🔗 API Documentation
 
----
+https://task-manager-1-ndia.onrender.com/swagger/
 
-## 🔐 Features
+### 🔗 Frontend Application
 
-* User registration and login using JWT authentication
-* Secure API endpoints with Bearer token authorization
-* Full CRUD operations for task management
-* User-specific data isolation
-* Filtering tasks by completion status
-* Search functionality using query parameters
-* Pagination for handling large datasets
-* Ordering support (e.g., latest tasks first)
-* Deployed with production-ready configuration
+https://task-manager-2i37vvjuz-rohans-projects-98f5ed53.vercel.app/
 
 ---
 
-## 📌 API Endpoints
+# ⚡ Core Features
 
-### 🔑 Authentication
-
-| Method | Endpoint              | Description                        |
-| ------ | --------------------- | ---------------------------------- |
-| POST   | `/api/register/`      | Register a new user                |
-| POST   | `/api/token/`         | Login (get access & refresh token) |
-| POST   | `/api/token/refresh/` | Refresh access token               |
-
----
-
-### 📋 Tasks
-
-| Method | Endpoint           | Description       |
-| ------ | ------------------ | ----------------- |
-| GET    | `/api/tasks/`      | Get all tasks     |
-| POST   | `/api/tasks/`      | Create a new task |
-| GET    | `/api/tasks/{id}/` | Retrieve task     |
-| PUT    | `/api/tasks/{id}/` | Update task       |
-| PATCH  | `/api/tasks/{id}/` | Partial update    |
-| DELETE | `/api/tasks/{id}/` | Delete task       |
+✅ JWT Authentication (SimpleJWT)
+✅ Secure Protected API Endpoints
+✅ Full CRUD Task Management
+✅ User-Specific Task Isolation
+✅ PostgreSQL Production Database
+✅ Swagger API Documentation
+✅ Search, Filtering & Ordering
+✅ Pagination Support
+✅ CI/CD with GitHub Actions
+✅ Production Deployment (Render + Vercel)
+✅ Environment Variable Configuration
+✅ DRF Throttling & Security Enhancements
+✅ Error Boundaries & Protected Routes
 
 ---
 
-## 🔐 Authentication Usage
+# 🛠️ Tech Stack
 
-All protected endpoints require JWT token in headers:
+## Backend
 
+* Django
+* Django REST Framework
+* SimpleJWT
+* Gunicorn
+* drf-yasg (Swagger)
+
+## Frontend
+
+* React
+* Tailwind CSS
+* Axios
+* React Router DOM
+
+## Database
+
+* PostgreSQL
+
+## Deployment & DevOps
+
+* Render
+* Vercel
+* GitHub Actions (CI/CD)
+
+---
+
+# 🔐 Authentication Flow
+
+Velocity Tasks uses JWT-based authentication.
+
+After successful login:
+
+* Access Token is used for authenticated requests
+* Protected endpoints require Bearer token authorization
+* User data is isolated securely per authenticated user
+
+Example header:
+
+```http
 Authorization: Bearer YOUR_ACCESS_TOKEN
+```
 
 ---
 
-## 🔍 Query Parameters
+# 📌 API Endpoints
 
-### Filter by completion:
+# 🔑 Authentication
 
-`/api/tasks/?completed=true`
-
-### Search by title:
-
-`/api/tasks/?title=study`
-
-### Order results:
-
-`/api/tasks/?ordering=-created_at`
+| Method | Endpoint              | Description               |
+| ------ | --------------------- | ------------------------- |
+| POST   | `/api/register/`      | Register new user         |
+| POST   | `/api/token/`         | Login & obtain JWT tokens |
+| POST   | `/api/token/refresh/` | Refresh access token      |
 
 ---
 
-## 🧪 Example Request
+# 📋 Task Management
 
-### Create Task
+| Method | Endpoint           | Description          |
+| ------ | ------------------ | -------------------- |
+| GET    | `/api/tasks/`      | Retrieve all tasks   |
+| POST   | `/api/tasks/`      | Create task          |
+| GET    | `/api/tasks/{id}/` | Retrieve single task |
+| PUT    | `/api/tasks/{id}/` | Update task          |
+| PATCH  | `/api/tasks/{id}/` | Partial update       |
+| DELETE | `/api/tasks/{id}/` | Delete task          |
+
+---
+
+# 🔍 Query Features
+
+## Filter Tasks
+
+```bash
+/api/tasks/?completed=true
+```
+
+## Search Tasks
+
+```bash
+/api/tasks/?title=study
+```
+
+## Order Tasks
+
+```bash
+/api/tasks/?ordering=-created_at
+```
+
+---
+
+# 🧪 Example Request
+
+## Create Task
 
 ```json
 {
-  "title": "Complete backend project",
+  "title": "Complete backend deployment",
   "completed": false
 }
 ```
 
 ---
 
-## 🛠️ Local Setup
+# ⚙️ Local Development Setup
+
+## Clone Repository
 
 ```bash
 git clone https://github.com/rohantiwari9573/task-manager.git
 cd task-manager
+```
+
+---
+
+## Backend Setup
+
+```bash
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
@@ -108,27 +164,81 @@ python manage.py runserver
 
 ---
 
-## 📦 Deployment
+## Frontend Setup
 
-Deployed on **Render** using:
-
-* Gunicorn (WSGI server)
-* PostgreSQL database
-* Environment-based configuration
-
----
-
-## 📈 Future Improvements
-
-* Add task priority and due dates
-* Add unit and integration tests
-* Dockerize the project
-* Add caching (Redis)
+```bash
+cd task-manager-frontend
+npm install
+npm start
+```
 
 ---
 
-## 👨‍💻 Author
+# 🚀 CI/CD Pipeline
 
-**Rohan Tiwari**
+This project uses GitHub Actions for automated Continuous Integration and Continuous Deployment.
+
+### Workflow Includes:
+
+* Automated backend validation
+* React production build checks
+* Automatic deployment to Render
+* Automatic deployment to Vercel
+
+Every push to the `main` branch automatically triggers deployment pipelines.
+
+---
+
+# 🔒 Production Security
+
+Implemented production-grade security configurations:
+
+* JWT Authentication
+* Protected API Routes
+* DRF Request Throttling
+* Environment Variable Isolation
+* HTTPS Security Flags
+* CORS Configuration
+* User-Specific Data Access Control
+
+---
+
+# 📈 Future Enhancements
+
+* Task Priorities & Due Dates
+* Redis Caching
+* Dockerization
+* Unit & Integration Testing
+* Token Rotation & Refresh Flow
+* WebSocket Real-Time Updates
+* Kanban Drag-and-Drop Board
+* Sentry Monitoring & Logging
+
+---
+
+# 👨‍💻 Author
+
+## Rohan Tiwari
+
 📧 [rohantiwari166@gmail.com](mailto:rohantiwari166@gmail.com)
-🔗 https://github.com/rohantiwari9573
+
+🔗 GitHub
+https://github.com/rohantiwari9573
+
+---
+
+# ⭐ Project Highlights
+
+This project demonstrates:
+
+* Backend API Engineering
+* Authentication & Authorization
+* Production Deployment
+* CI/CD Automation
+* REST API Design
+* Database Integration
+* Frontend-Backend Integration
+* Cloud Infrastructure Basics
+* Production Security Practices
+
+---
