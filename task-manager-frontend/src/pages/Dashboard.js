@@ -80,6 +80,12 @@ function Dashboard() {
 
   const deleteTask = async (id) => {
 
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this task?"
+    );
+
+    if (!confirmDelete) return;
+
     try {
 
       await API.delete(`tasks/${id}/`);
@@ -91,10 +97,19 @@ function Dashboard() {
     } catch (err) {
 
       console.error(err);
+
+      toast.error("Failed to delete task");
     }
   };
 
+  // LOGOUT WITH CONFIRMATION
   const handleLogout = () => {
+
+    const confirmLogout = window.confirm(
+      "Are you sure you want to logout?"
+    );
+
+    if (!confirmLogout) return;
 
     localStorage.removeItem("token");
     localStorage.removeItem("username");
@@ -116,7 +131,11 @@ function Dashboard() {
           </h1>
 
           <p className="text-slate-300 mt-2 text-lg">
-            Hey <span className="text-blue-400 font-semibold">{username}</span>, Welcome Back 👋
+            Hey{" "}
+            <span className="text-blue-400 font-semibold">
+              {username}
+            </span>
+            , Welcome Back 👋
           </p>
 
           <p className="text-slate-400 text-sm mt-1">
@@ -165,69 +184,79 @@ function Dashboard() {
 
         </div>
 
-        {/* TASKS */}
+        {/* TASK LIST */}
         <div className="space-y-6">
 
-          {tasks.map((task) => (
+          {tasks.length === 0 ? (
 
-            <div
-              key={task.id}
-              className="bg-slate-800/70 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-slate-700 flex justify-between items-center"
-            >
+            <div className="text-center text-slate-400 text-xl mt-20">
+              No tasks yet. Start by adding one 🚀
+            </div>
 
-              <div>
+          ) : (
 
-                <h3
-                  className={`text-2xl font-semibold ${
-                    task.completed
-                      ? "line-through text-gray-400"
-                      : "text-white"
-                  }`}
-                >
-                  {task.title}
-                </h3>
+            tasks.map((task) => (
 
-                <div className="flex items-center gap-4 mt-3">
+              <div
+                key={task.id}
+                className="bg-slate-800/70 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-slate-700 flex justify-between items-center"
+              >
 
-                  <span
-                    className={`px-4 py-1 rounded-full text-sm font-medium ${
+                <div>
+
+                  <h3
+                    className={`text-2xl font-semibold ${
                       task.completed
-                        ? "bg-green-500/20 text-green-300"
-                        : "bg-yellow-500/20 text-yellow-300"
+                        ? "line-through text-gray-400"
+                        : "text-white"
                     }`}
                   >
-                    {task.completed ? "Completed" : "Pending"}
-                  </span>
+                    {task.title}
+                  </h3>
+
+                  <div className="flex items-center gap-4 mt-3">
+
+                    <span
+                      className={`px-4 py-1 rounded-full text-sm font-medium ${
+                        task.completed
+                          ? "bg-green-500/20 text-green-300"
+                          : "bg-yellow-500/20 text-yellow-300"
+                      }`}
+                    >
+                      {task.completed ? "Completed" : "Pending"}
+                    </span>
+
+                  </div>
+
+                </div>
+
+                <div className="flex gap-3">
+
+                  <button
+                    onClick={() => toggleComplete(task)}
+                    className={`px-5 py-3 rounded-lg font-semibold text-white ${
+                      task.completed
+                        ? "bg-yellow-500 hover:bg-yellow-600"
+                        : "bg-green-500 hover:bg-green-600"
+                    }`}
+                  >
+                    {task.completed ? "Undo" : "Complete"}
+                  </button>
+
+                  <button
+                    onClick={() => deleteTask(task.id)}
+                    className="bg-red-500 hover:bg-red-600 px-5 py-3 rounded-lg font-semibold text-white"
+                  >
+                    Delete
+                  </button>
 
                 </div>
 
               </div>
 
-              <div className="flex gap-3">
+            ))
 
-                <button
-                  onClick={() => toggleComplete(task)}
-                  className={`px-5 py-3 rounded-lg font-semibold text-white ${
-                    task.completed
-                      ? "bg-yellow-500 hover:bg-yellow-600"
-                      : "bg-green-500 hover:bg-green-600"
-                  }`}
-                >
-                  {task.completed ? "Undo" : "Complete"}
-                </button>
-
-                <button
-                  onClick={() => deleteTask(task.id)}
-                  className="bg-red-500 hover:bg-red-600 px-5 py-3 rounded-lg font-semibold text-white"
-                >
-                  Delete
-                </button>
-
-              </div>
-
-            </div>
-
-          ))}
+          )}
 
         </div>
 
