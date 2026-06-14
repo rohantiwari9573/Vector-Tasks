@@ -4,16 +4,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.auth.models import User
-import traceback
-
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Task
 from .serializers import TaskSerializer, RegisterSerializer
 
 
 # =========================
-# USER REGISTRATION (AUTO LOGIN)
+# USER REGISTRATION
 # =========================
 @swagger_auto_schema(
     method='post',
@@ -21,58 +18,65 @@ from .serializers import TaskSerializer, RegisterSerializer
 )
 @api_view(['POST'])
 def register_user(request):
-    try:
-        serializer = RegisterSerializer(data=request.data)
 
-        if serializer.is_valid():
-            username = serializer.validated_data['username']
-            password = serializer.validated_data['password']
+    serializer = RegisterSerializer(data=request.data)
 
-            if User.objects.filter(username=username).exists():
-                return Response({"error": "User already exists"}, status=400)
+    if serializer.is_valid():
 
-            user = User.objects.create_user(username=username, password=password)
+        username = serializer.validated_data['username']
 
-            # 🔥 AUTO LOGIN
-            refresh = RefreshToken.for_user(user)
+        # CHECK DUPLICATE USERNAME
+        if User.objects.filter(username=username).exists():
 
-            return Response({
-                "message": "User created successfully",
-                "refresh": str(refresh),
-                "access": str(refresh.access_token)
-            }, status=201)
+            return Response(
+                {"error": "Username already taken"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        return Response(serializer.errors, status=400)
+        serializer.save()
 
-    except Exception as e:
-        return Response({
-            "error": str(e),
-            "trace": traceback.format_exc()
-        }, status=500)
+        return Response(
+            {"message": "User registered successfully"},
+            status=status.HTTP_201_CREATED
+        )
+
+    return Response(
+        serializer.errors,
+        status=status.HTTP_400_BAD_REQUEST
+    )
 
 
 # =========================
 # LIST + CREATE TASKS
 # =========================
 class TaskListCreateView(generics.ListCreateAPIView):
+
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+
         queryset = Task.objects.filter(user=self.request.user)
 
-        # Filter
+        # FILTER
         completed = self.request.query_params.get('completed')
+
         if completed is not None:
-            queryset = queryset.filter(completed=(completed.lower() == 'true'))
+            queryset = queryset.filter(
+                completed=(completed.lower() == 'true')
+            )
 
-        # Search
+        # SEARCH
         title = self.request.query_params.get('title')
-        if title:
-            queryset = queryset.filter(title__icontains=title)
 
-        # 🔥 ORDERING
+        if title:
+            queryset = queryset.filter(
+                title__icontains=title
+            )
+
+        # ORDERING
         ordering = self.request.query_params.get('ordering')
+
         if ordering:
             queryset = queryset.order_by(ordering)
 
@@ -86,6 +90,7 @@ class TaskListCreateView(generics.ListCreateAPIView):
 # RETRIEVE + UPDATE + DELETE
 # =========================
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 

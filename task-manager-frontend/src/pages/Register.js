@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
 
 function Register() {
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -11,9 +12,13 @@ function Register() {
   });
 
   const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState("");
 
+  const [success, setSuccess] = useState("");
+
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -21,33 +26,51 @@ function Register() {
   };
 
   const handleRegister = async (e) => {
+
     e.preventDefault();
 
     setError("");
+    setSuccess("");
+
     setLoading(true);
 
     try {
-      await api.post("register/", formData);
 
-      alert("Registration successful! Please login.");
+      const res = await api.post("register/", formData);
 
-      navigate("/");
+      setSuccess(res.data.message);
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
 
     } catch (err) {
+
       console.error(err);
 
-      if (err.response?.data?.username) {
+      if (err.response?.data?.error) {
+
+        setError(err.response.data.error);
+
+      } else if (err.response?.data?.username) {
+
         setError(err.response.data.username[0]);
+
       } else {
+
         setError("Registration failed");
       }
+
     } finally {
+
       setLoading(false);
     }
   };
 
   return (
+
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-black via-slate-950 to-blue-950 px-4">
+
       <div className="bg-slate-800/70 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700">
 
         <h1 className="text-4xl font-bold text-white text-center mb-8">
@@ -55,8 +78,16 @@ function Register() {
         </h1>
 
         {error && (
+
           <div className="bg-red-500/20 border border-red-500 text-red-300 p-3 rounded-lg mb-4 text-sm">
             {error}
+          </div>
+        )}
+
+        {success && (
+
+          <div className="bg-green-500/20 border border-green-500 text-green-300 p-3 rounded-lg mb-4 text-sm">
+            {success}
           </div>
         )}
 
@@ -87,26 +118,34 @@ function Register() {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 transition duration-200 text-white py-3 rounded-lg font-semibold flex items-center justify-center"
           >
+
             {loading ? (
-              <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+
             ) : (
               "Register"
             )}
+
           </button>
 
         </form>
 
         <p className="text-slate-300 text-center mt-6">
+
           Already have an account?{" "}
+
           <Link
             to="/"
             className="text-blue-400 hover:text-blue-300"
           >
             Login
           </Link>
+
         </p>
 
       </div>
+
     </div>
   );
 }
