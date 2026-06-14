@@ -7,15 +7,22 @@ import API from "../services/api";
 function Dashboard() {
 
   const [tasks, setTasks] = useState([]);
+
   const [title, setTitle] = useState("");
+
+  const [lastLogin, setLastLogin] = useState("");
 
   const navigate = useNavigate();
 
   const username = localStorage.getItem("username");
 
-  const lastLogin = localStorage.getItem("lastLogin");
-
   useEffect(() => {
+
+    const storedLogin = localStorage.getItem("lastLogin");
+
+    if (storedLogin) {
+      setLastLogin(storedLogin);
+    }
 
     fetchTasks();
 
@@ -33,7 +40,9 @@ function Dashboard() {
 
       console.error(err);
 
-      toast.error("Failed to load tasks");
+      toast.error("Session expired. Please login again.");
+
+      navigate("/");
     }
   };
 
@@ -75,6 +84,8 @@ function Dashboard() {
     } catch (err) {
 
       console.error(err);
+
+      toast.error("Failed to update task");
     }
   };
 
@@ -102,7 +113,6 @@ function Dashboard() {
     }
   };
 
-  // LOGOUT WITH CONFIRMATION
   const handleLogout = () => {
 
     const confirmLogout = window.confirm(
@@ -112,7 +122,6 @@ function Dashboard() {
     if (!confirmLogout) return;
 
     localStorage.removeItem("token");
-    localStorage.removeItem("username");
 
     navigate("/");
   };
@@ -153,7 +162,7 @@ function Dashboard() {
 
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <div className="max-w-5xl mx-auto px-6 py-10">
 
         {/* ADD TASK */}
@@ -184,7 +193,7 @@ function Dashboard() {
 
         </div>
 
-        {/* TASK LIST */}
+        {/* TASKS */}
         <div className="space-y-6">
 
           {tasks.length === 0 ? (

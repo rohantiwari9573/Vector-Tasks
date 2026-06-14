@@ -12,6 +12,7 @@ function Login() {
   });
 
   const [error, setError] = useState("");
+
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -36,12 +37,13 @@ function Login() {
 
       const res = await API.post("token/", form);
 
+      // STORE TOKEN
       localStorage.setItem("token", res.data.access);
 
-      // SAVE USERNAME
+      // STORE USERNAME
       localStorage.setItem("username", form.username);
 
-      // SAVE LAST LOGIN TIME
+      // STORE LAST LOGIN
       localStorage.setItem(
         "lastLogin",
         new Date().toLocaleString()
