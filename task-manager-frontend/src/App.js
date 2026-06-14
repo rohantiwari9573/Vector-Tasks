@@ -1,4 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import { Toaster } from "react-hot-toast";
 
@@ -8,6 +13,15 @@ import Dashboard from "./pages/Dashboard";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
+
+function PublicRoute({ children }) {
+
+  const token = localStorage.getItem("token");
+
+  return token
+    ? <Navigate to="/dashboard" replace />
+    : children;
+}
 
 function App() {
 
@@ -30,11 +44,32 @@ function App() {
 
         <Routes>
 
-          <Route path="/" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
 
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
 
-          <Route path="/register" element={<Register />} />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
 
           <Route
             path="/dashboard"

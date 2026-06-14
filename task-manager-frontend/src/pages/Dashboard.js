@@ -13,6 +13,9 @@ function Dashboard() {
   const [editTitle, setEditTitle] = useState("");
   const [lastLogin, setLastLogin] = useState("");
 
+  const [showLogoutModal, setShowLogoutModal] =
+    useState(false);
+
   const username = localStorage.getItem("username");
 
   const fetchTasks = async () => {
@@ -28,14 +31,15 @@ function Dashboard() {
       console.error(err);
 
       if (err.response?.status === 401) {
-        handleLogout();
+        handleLogoutDirect();
       }
     }
   };
 
   useEffect(() => {
 
-    const storedLogin = localStorage.getItem("lastLogin");
+    const storedLogin =
+      localStorage.getItem("lastLogin");
 
     if (storedLogin) {
       setLastLogin(storedLogin);
@@ -126,13 +130,7 @@ function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-
-    const confirmLogout = window.confirm(
-      "Are you sure you want to logout?"
-    );
-
-    if (!confirmLogout) return;
+  const handleLogoutDirect = () => {
 
     localStorage.removeItem("token");
     localStorage.removeItem("username");
@@ -143,6 +141,8 @@ function Dashboard() {
   return (
 
     <div className="min-h-screen bg-gradient-to-r from-black via-slate-950 to-blue-950 text-white">
+
+      {/* HEADER */}
 
       <div className="flex justify-between items-center px-8 py-5 border-b border-slate-700">
 
@@ -165,13 +165,15 @@ function Dashboard() {
         </div>
 
         <button
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
           className="bg-red-500 hover:bg-red-600 px-5 py-2 rounded-lg font-semibold transition"
         >
           Logout
         </button>
 
       </div>
+
+      {/* ADD TASK */}
 
       <div className="max-w-5xl mx-auto mt-12 px-4">
 
@@ -204,6 +206,8 @@ function Dashboard() {
           </form>
 
         </div>
+
+        {/* TASK LIST */}
 
         <div className="mt-12 space-y-6">
 
@@ -241,6 +245,7 @@ function Dashboard() {
                 ) : (
 
                   <>
+
                     <h3
                       className={`text-2xl font-semibold ${
                         task.completed
@@ -266,10 +271,13 @@ function Dashboard() {
                       </span>
 
                       <span className="text-slate-400 text-sm">
-                        {new Date(task.created_at).toLocaleString()}
+                        {new Date(
+                          task.created_at
+                        ).toLocaleString()}
                       </span>
 
                     </div>
+
                   </>
 
                 )}
@@ -312,6 +320,46 @@ function Dashboard() {
         </div>
 
       </div>
+
+      {/* CUSTOM LOGOUT MODAL */}
+
+      {showLogoutModal && (
+
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+
+          <div className="bg-slate-900 border border-slate-700 p-8 rounded-2xl w-full max-w-md shadow-2xl">
+
+            <h2 className="text-3xl font-bold mb-4">
+              Logout
+            </h2>
+
+            <p className="text-slate-300 mb-8">
+              Are you sure you want to logout?
+            </p>
+
+            <div className="flex justify-end gap-4">
+
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleLogoutDirect}
+                className="px-6 py-3 rounded-xl bg-red-500 hover:bg-red-600"
+              >
+                Logout
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
 
     </div>
   );
