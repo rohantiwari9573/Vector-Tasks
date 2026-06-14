@@ -38,11 +38,22 @@ function Login() {
 
       localStorage.setItem("token", res.data.access);
 
+      // SAVE USERNAME
+      localStorage.setItem("username", form.username);
+
+      // SAVE LAST LOGIN TIME
+      localStorage.setItem(
+        "lastLogin",
+        new Date().toLocaleString()
+      );
+
       toast.success("Login successful");
 
       navigate("/dashboard", { replace: true });
 
     } catch (err) {
+
+      console.error(err);
 
       toast.error("Invalid credentials");
 
@@ -57,13 +68,17 @@ function Login() {
 
   return (
 
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-gray-800">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-gray-800 px-4">
 
       <div className="w-full max-w-md bg-white/10 backdrop-blur-lg p-10 rounded-2xl border border-gray-700 shadow-2xl">
 
-        <h1 className="text-5xl font-bold text-white text-center mb-8">
+        <h1 className="text-5xl font-bold text-white text-center mb-2">
           Task Manager
         </h1>
+
+        <p className="text-gray-400 text-center mb-8">
+          Organize your tasks efficiently
+        </p>
 
         {error && (
           <div className="bg-red-500/20 border border-red-500 text-red-300 p-3 rounded-lg mb-5 text-center">
@@ -79,6 +94,7 @@ function Login() {
             placeholder="Username"
             value={form.username}
             onChange={handleChange}
+            required
             className="w-full p-4 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500"
           />
 
@@ -88,6 +104,7 @@ function Login() {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
+            required
             className="w-full p-4 rounded-lg bg-gray-800 border border-gray-600 text-white outline-none focus:border-blue-500"
           />
 
