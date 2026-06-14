@@ -144,7 +144,6 @@ function Dashboard() {
 
     <div className="min-h-screen bg-gradient-to-r from-black via-slate-950 to-blue-950 text-white">
 
-      {/* Navbar */}
       <div className="flex justify-between items-center px-8 py-5 border-b border-slate-700">
 
         <div>
@@ -174,7 +173,6 @@ function Dashboard() {
 
       </div>
 
-      {/* Add Task */}
       <div className="max-w-5xl mx-auto mt-12 px-4">
 
         <div className="bg-slate-800/70 backdrop-blur-md border border-slate-700 rounded-2xl p-8 shadow-2xl">
@@ -207,7 +205,6 @@ function Dashboard() {
 
         </div>
 
-        {/* Task List */}
         <div className="mt-12 space-y-6">
 
           {tasks.map((task) => (
