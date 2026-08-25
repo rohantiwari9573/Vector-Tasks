@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, filters
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
@@ -53,6 +53,9 @@ class TaskListCreateView(generics.ListCreateAPIView):
 
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['created_at', 'title', 'completed']
+    ordering = ['-created_at']
 
     def get_queryset(self):
 
@@ -73,12 +76,6 @@ class TaskListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(
                 title__icontains=title
             )
-
-        # ORDERING
-        ordering = self.request.query_params.get('ordering')
-
-        if ordering:
-            queryset = queryset.order_by(ordering)
 
         return queryset
 
