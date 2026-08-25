@@ -2,14 +2,17 @@ import os
 from pathlib import Path
 from datetime import timedelta
 import dj_database_url
+from dotenv import load_dotenv
 
 from corsheaders.defaults import default_headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-secret-key'
+load_dotenv(BASE_DIR / ".env")
 
-DEBUG = True
+SECRET_KEY = os.environ["SECRET_KEY"]
+
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -73,10 +76,9 @@ WSGI_APPLICATION = "taskmanager.wsgi.application"
 # DATABASE
 # =========================
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+    )
 }
 
 # =========================
@@ -129,6 +131,14 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "20/min",
+        "user": "120/min",
+    },
 }
 
 # =========================
