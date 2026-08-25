@@ -14,7 +14,7 @@ https://task-manager-1-ndia.onrender.com/swagger/
 
 ### 🔗 Frontend Application
 
-https://task-manager-l7ebij6oa-rohans-projects-98f5ed53.vercel.app/
+https://task-manager-theta-nine-54.vercel.app/
 ---
 
 # ⚡ Core Features
