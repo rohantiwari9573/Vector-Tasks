@@ -155,11 +155,20 @@ cd task-manager
 
 ## Backend Setup
 
+Create a `.env` file in the project root:
+
+```env
+SECRET_KEY=your-local-secret-key
+DEBUG=True
+```
+
 ```bash
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
 ```
+
+Without a `DATABASE_URL` set, the backend falls back to a local SQLite database.
 
 ---
 
