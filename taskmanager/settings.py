@@ -81,6 +81,10 @@ DATABASES = {
     )
 }
 
+if DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
+    DATABASES["default"].setdefault("OPTIONS", {})
+    DATABASES["default"]["OPTIONS"]["connect_timeout"] = 5
+
 # =========================
 # PASSWORD VALIDATION
 # =========================
