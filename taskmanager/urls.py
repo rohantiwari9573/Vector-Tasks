@@ -20,6 +20,12 @@ def home(request):
     })
 
 
+def health(request):
+    # Liveness probe for uptime pingers: a plain Django view (not DRF), so
+    # no JWT auth or anon throttling applies, and no database access.
+    return JsonResponse({"status": "healthy"})
+
+
 schema_view = get_schema_view(
     openapi.Info(
         title="Task Manager API",
@@ -32,6 +38,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('', home),
+    path('health', health),
     path('admin/', admin.site.urls),
 
     path('api/', include('tasks.urls')),
