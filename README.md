@@ -1,252 +1,128 @@
-# 🚀 Velocity Tasks — Production-Ready Task Management API
+<div align="center">
 
-A scalable and production-grade **Task Management REST API** built with **Django REST Framework**, featuring secure JWT authentication, PostgreSQL persistence, CI/CD automation, and cloud deployment.
+# ✅ Vector Tasks
 
-Designed with modern backend engineering practices including protected endpoints, rate limiting, environment-based configuration, Swagger API documentation, and production deployment pipelines.
+**A full-stack task manager: a Django REST Framework API with JWT auth and per-user data isolation, plus a React frontend.**
 
----
+[![Backend CI](https://github.com/rohantiwari9573/Vector-Tasks/actions/workflows/backend.yml/badge.svg)](https://github.com/rohantiwari9573/Vector-Tasks/actions/workflows/backend.yml)
+[![Frontend CI](https://github.com/rohantiwari9573/Vector-Tasks/actions/workflows/frontend.yml/badge.svg)](https://github.com/rohantiwari9573/Vector-Tasks/actions/workflows/frontend.yml)
+![Django](https://img.shields.io/badge/Django_REST_Framework-092E20?style=flat-square&logo=django&logoColor=white)
+![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
 
-# 🌐 Live Demo
+**[Live app](https://task-manager-theta-nine-54.vercel.app)** · **[API docs (Swagger)](https://task-manager-1-ndia.onrender.com/swagger/)**
 
-### 🔗 API Documentation
+<sub>The API is hosted on a free tier, so the first request after an idle period can take up to a minute while it wakes up. Registration is open.</sub>
 
-https://task-manager-1-ndia.onrender.com/swagger/
+</div>
 
-### 🔗 Frontend Application
+<br />
 
-https://task-manager-theta-nine-54.vercel.app/
----
-
-# ⚡ Core Features
-
-✅ JWT Authentication (SimpleJWT)
-✅ Secure Protected API Endpoints
-✅ Full CRUD Task Management
-✅ User-Specific Task Isolation
-✅ PostgreSQL Production Database
-✅ Swagger API Documentation
-✅ Search, Filtering & Ordering
-✅ Pagination Support
-✅ CI/CD with GitHub Actions
-✅ Production Deployment (Render + Vercel)
-✅ Environment Variable Configuration
-✅ DRF Throttling & Security Enhancements
-✅ Error Boundaries & Protected Routes
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/dashboard.png" alt="Task dashboard" width="100%" /><p align="center"><sub>Task dashboard</sub></p></td>
+<td width="50%"><img src="docs/screenshots/swagger.png" alt="Swagger API documentation" width="100%" /><p align="center"><sub>Self-documenting API (drf-yasg)</sub></p></td>
+</tr>
+</table>
 
 ---
 
-# 🛠️ Tech Stack
+## Features
 
-## Backend
+- **JWT authentication** with SimpleJWT. Clients get an access/refresh token pair and send `Authorization: Bearer <token>`.
+- **Per-user data isolation.** Every task query is scoped to `request.user`, so a user can't read, update or delete anyone else's tasks. Another user's task ID returns `404`.
+- **Full CRUD** for tasks, with filtering by status (`?completed=true`), title search (`?title=`) and safe ordering through DRF's `OrderingFilter` (`?ordering=-created_at`).
+- **Security hardening.**
+  - The secret key and debug flag come from the environment, never source code.
+  - Passwords pass Django's validators.
+  - DRF throttling allows 20 requests/min for anonymous users and 120/min for authenticated users.
+- **Operations.** Errors are logged to the console so they show up in the host's logs. The database connection has a 5-second timeout so one stuck connection can't take the site down, and an unauthenticated `/health` endpoint serves uptime checks.
+- **React frontend** with protected routes, an error boundary, and create, edit, complete and delete in place.
 
-* Django
-* Django REST Framework
-* SimpleJWT
-* Gunicorn
-* drf-yasg (Swagger)
+## API
 
-## Frontend
-
-* React
-* Tailwind CSS
-* Axios
-* React Router DOM
-
-## Database
-
-* PostgreSQL
-
-## Deployment & DevOps
-
-* Render
-* Vercel
-* GitHub Actions (CI/CD)
-
----
-
-# 🔐 Authentication Flow
-
-Velocity Tasks uses JWT-based authentication.
-
-After successful login:
-
-* Access Token is used for authenticated requests
-* Protected endpoints require Bearer token authorization
-* User data is isolated securely per authenticated user
-
-Example header:
-
-```http
-Authorization: Bearer YOUR_ACCESS_TOKEN
-```
-
----
-
-# 📌 API Endpoints
-
-# 🔑 Authentication
-
-| Method | Endpoint              | Description               |
-| ------ | --------------------- | ------------------------- |
-| POST   | `/api/register/`      | Register new user         |
-| POST   | `/api/token/`         | Login & obtain JWT tokens |
-| POST   | `/api/token/refresh/` | Refresh access token      |
-
----
-
-# 📋 Task Management
-
-| Method | Endpoint           | Description          |
-| ------ | ------------------ | -------------------- |
-| GET    | `/api/tasks/`      | Retrieve all tasks   |
-| POST   | `/api/tasks/`      | Create task          |
-| GET    | `/api/tasks/{id}/` | Retrieve single task |
-| PUT    | `/api/tasks/{id}/` | Update task          |
-| PATCH  | `/api/tasks/{id}/` | Partial update       |
-| DELETE | `/api/tasks/{id}/` | Delete task          |
-
----
-
-# 🔍 Query Features
-
-## Filter Tasks
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/register/` | Create an account |
+| `POST` | `/api/token/` | Log in and get access + refresh tokens |
+| `POST` | `/api/token/refresh/` | Refresh the access token |
+| `GET` | `/api/tasks/` | List your tasks (`?completed=`, `?title=`, `?ordering=`) |
+| `POST` | `/api/tasks/` | Create a task |
+| `GET` · `PUT` · `PATCH` · `DELETE` | `/api/tasks/{id}/` | Read, update or delete one of your tasks |
+| `GET` | `/health` | Liveness probe |
 
 ```bash
-/api/tasks/?completed=true
+curl -X POST https://task-manager-1-ndia.onrender.com/api/tasks/ \
+  -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" \
+  -d '{"title": "Ship v2 onboarding flow", "completed": false}'
 ```
 
-## Search Tasks
+## Architecture
+
+```mermaid
+flowchart LR
+    U[Browser] --> FE["React SPA<br/>(Vercel)"]
+    FE -->|"JWT · REST"| API["Django REST Framework<br/>gunicorn + WhiteNoise (Render)"]
+    API --> DB[("PostgreSQL<br/>(Neon)")]
+```
+
+## Getting started
+
+### With Docker
 
 ```bash
-/api/tasks/?title=study
+git clone https://github.com/rohantiwari9573/Vector-Tasks.git
+cd Vector-Tasks
+cat > .env <<'EOF'
+SECRET_KEY=change-me
+POSTGRES_PASSWORD=change-me
+DATABASE_URL=postgres://postgres:change-me@db:5432/taskmanager
+EOF
+docker compose up --build        # API on http://localhost:8001, Swagger at /swagger/
 ```
 
-## Order Tasks
+The container collects static files, applies migrations and starts gunicorn against its own Postgres container.
 
-```bash
-/api/tasks/?ordering=-created_at
-```
-
----
-
-# 🧪 Example Request
-
-## Create Task
-
-```json
-{
-  "title": "Complete backend deployment",
-  "completed": false
-}
-```
-
----
-
-# ⚙️ Local Development Setup
-
-## Clone Repository
-
-```bash
-git clone https://github.com/rohantiwari9573/task-manager.git
-cd task-manager
-```
-
----
-
-## Backend Setup
-
-Create a `.env` file in the project root:
-
-```env
-SECRET_KEY=your-local-secret-key
-DEBUG=True
-```
+### Without Docker
 
 ```bash
 pip install -r requirements.txt
+echo "SECRET_KEY=change-me" > .env
+echo "DEBUG=True" >> .env
 python manage.py migrate
-python manage.py runserver
+python manage.py runserver       # falls back to SQLite when DATABASE_URL is unset
 ```
-
-Without a `DATABASE_URL` set, the backend falls back to a local SQLite database.
-
----
-
-## Frontend Setup
 
 ```bash
 cd task-manager-frontend
 npm install
-npm start
+npm start                        # http://localhost:3000
 ```
 
----
+## Deployment and CI
 
-# 🚀 CI/CD Pipeline
+- **Frontend:** Vercel.
+- **API:** Render, running gunicorn and serving static files through WhiteNoise.
+- **Database:** Neon PostgreSQL.
+- **CI:** GitHub Actions runs Django system checks on the backend and a production React build on the frontend, on every push.
 
-This project uses GitHub Actions for automated Continuous Integration and Continuous Deployment.
+## Project structure
 
-### Workflow Includes:
+```text
+taskmanager/            Django project: settings, URLs, health check
+tasks/                  app: models, serializers, views, URLs
+task-manager-frontend/  React SPA (pages, components, API service)
+Dockerfile · docker-compose.yml
+```
 
-* Automated backend validation
-* React production build checks
-* Automatic deployment to Render
-* Automatic deployment to Vercel
+## Roadmap
 
-Every push to the `main` branch automatically triggers deployment pipelines.
+- [ ] API test suite (auth, isolation, filtering)
+- [ ] Pagination on `/api/tasks/`
+- [ ] Priorities and due dates
+- [ ] Drag-and-drop board view
 
----
+## Author
 
-# 🔒 Production Security
-
-Implemented production-grade security configurations:
-
-* JWT Authentication
-* Protected API Routes
-* DRF Request Throttling
-* Environment Variable Isolation
-* HTTPS Security Flags
-* CORS Configuration
-* User-Specific Data Access Control
-
----
-
-# 📈 Future Enhancements
-
-* Task Priorities & Due Dates
-* Redis Caching
-* Dockerization
-* Unit & Integration Testing
-* Token Rotation & Refresh Flow
-* WebSocket Real-Time Updates
-* Kanban Drag-and-Drop Board
-* Sentry Monitoring & Logging
-
----
-
-# 👨‍💻 Author
-
-## Rohan Tiwari
-
-📧 [rohantiwari166@gmail.com](mailto:rohantiwari166@gmail.com)
-
-🔗 GitHub
-https://github.com/rohantiwari9573
-
----
-
-# ⭐ Project Highlights
-
-This project demonstrates:
-
-* Backend API Engineering
-* Authentication & Authorization
-* Production Deployment
-* CI/CD Automation
-* REST API Design
-* Database Integration
-* Frontend-Backend Integration
-* Cloud Infrastructure Basics
-* Production Security Practices
-
----
+**Rohan Tiwari** · [GitHub](https://github.com/rohantiwari9573) · [LinkedIn](https://www.linkedin.com/in/rohan-tiwari-012106283/)
